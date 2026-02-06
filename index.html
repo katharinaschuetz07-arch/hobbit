@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Der Hobbit - Premium Lern-App v1.2.6</title>
+<style>
+:root {
+  --bg-dark: #0B3D0B;
+  --card-dark: #001f3f;
+  --gold: #ffd700;
+  --text-white: #ffffff;
+  --btn-blue: #001f3f; 
+  --btn-green: #004d00;
+}
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin:0; padding:10px;
+  background:var(--bg-dark);
+  color:var(--text-white);
+  display:flex; flex-direction:column;
+  min-height:100vh; box-sizing:border-box;
+}
+
+#header-container { 
+  display: grid;
+  grid-template-columns: 60px 1fr 60px;
+  align-items: center;
+  text-align:center; 
+  margin-bottom:8px; 
+  border-bottom: 2px solid var(--gold);
+  padding-bottom: 5px;
+}
+#start-nav-btn {
+  background: var(--btn-blue);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  border-radius: 8px;
+  padding: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+#header-main { margin:0; font-size:1.4rem; color:var(--gold); font-weight: bold; grid-column: 2; }
+#header-sub { font-size:0.8rem; color: var(--text-white); font-family: monospace; grid-column: 2; }
+#header-version { font-size:0.65rem; color: var(--text-white); grid-column: 2; }
+
+#categories { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; margin-bottom:8px; }
+.category-btn {
+  padding:5px 2px; font-size:0.7rem; font-weight:bold;
+  background:var(--card-dark); color:var(--text-white);
+  border-radius:6px; border:1px solid rgba(255,215,0,0.3);
+  cursor:pointer; min-height:38px;
+}
+
+#card {
+  flex:1; background:var(--card-dark); border-radius:20px;
+  padding:15px; display:flex; flex-direction:column;
+  justify-content:center; align-items:center; text-align:center;
+  border:2px solid var(--gold);
+  box-shadow:0 6px 15px rgba(0,0,0,0.4);
+  margin-bottom:8px; overflow-y:auto; cursor: pointer;
+}
+.card-head { font-size:0.8rem; color:var(--gold); text-transform:uppercase; margin-bottom:5px; }
+.element-name { font-size:1.4rem; font-weight:900; margin:5px 0; color:white; }
+.meaning { font-size:0.85rem; line-height:1.4; background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; width:92%; text-align: left; }
+#card-index { margin-top:8px; font-size:0.7rem; color:#cfcfc0; }
+
+#nav { display:flex; gap:8px; margin-bottom:8px; }
+.nav-btn {
+  flex:1; padding:12px; font-size:0.9rem; font-weight:bold;
+  border: 1px solid var(--gold); border-radius:12px; background: var(--btn-green);
+  color:white; cursor:pointer;
+}
+
+.bottom-btn {
+  padding:12px; width:100%; border:none; border-radius:12px;
+  background:var(--gold); color:var(--bg-dark); font-size:1rem;
+  font-weight:800; text-transform:uppercase; cursor:pointer;
+}
+
+#app-footer {
+  text-align: center;
+  font-size: 0.65rem;
+  color: #cfcfc0;
+  margin-top: 10px;
+  padding: 5px;
+}
+</style>
+</head>
+<body>
+
+<div id="header-container">
+  <button id="start-nav-btn" onclick="goToStart()">HOME</button>
+  <div id="header-main">Der Hobbit</div>
+  <div id="header-sub">J.R.R. Tolkin</div>
+  <div id="header-version">Version 1.2.6</div>
+</div>
+
+<div id="categories">
+  <button class="category-btn" data-category="wissen">Wissen</button>
+  <button class="category-btn" data-category="hauptfiguren">Hauptfiguren</button>
+  <button class="category-btn" data-category="nebenfiguren">Nebenfiguren</button>
+  <button class="category-btn" data-category="orte">Orte</button>
+  <button class="category-btn" data-category="kreaturen">Kreaturen</button>
+  <button class="category-btn" data-category="zitate">Zitate</button>
+</div>
+
+<div id="card">
+  <div class="card-head" id="card-head">Willkommen</div>
+  <div class="element-name" id="element-name">Lade Inhalte...</div>
+  <div class="meaning" id="meaning">Bitte warten...</div>
+  <div id="card-index"></div>
+</div>
+
+<div id="nav">
+  <button class="nav-btn" id="prev-btn">◀ Zurück</button>
+  <button class="nav-btn" id="read-btn">🔊 Hören</button>
+  <button class="nav-btn" id="next-btn">Weiter ▶</button>
+</div>
+
+<button class="bottom-btn" id="explain-btn">HOBBIT PHILOSOPHIE</button>
+
+<div id="app-footer">
+  (C) 2006 Premium Edition 1.2.6
+</div>
+
+<script>
+const cards = {
+  home: [
+    {title:"Herzlich Willkommen", content:"Willkommen in der Premium Lern-App zum Hobbit. Erfahre alles über Bilbos Reise."},
+
+    {title:"Bedienung", content:"Nutze die Kategorien oben oder den Home-Button, um jederzeit hierher zurückzukehren."},
+    {title:"Audio-Funktion", content:"Die App liest dir alle Fakten automatisch vor. Klicke auf 'Hören' für eine Wiederholung."},
+    {title:"Kategorien", content:"Wähle oben zwischen Wissen, Figuren, Orten, Kreaturen oder Zitaten."},
+
+{title:"Dein Fortschritt", content:"Die Anzeige unten auf der Karte zeigt dir, wie viele Fakten du in der Kategorie schon kennst."},
+    {title:"Navigation", content:"Klicke direkt auf die Karte oder nutze die Pfeile, um durch die Fakten zu blättern."},
+    {title:"Interaktivität", content:"Die App ist darauf ausgelegt, dir Mittelerde ein Stück näher zu bringen."},
+    {title:"Philosophie", content:"Der goldene Button ganz unten führt dich direkt zu den tieferen Gedanken Tolkiens."},
+
+    {title:"Die Hobbit App", content:"Hier lernst du spielerisch die Details über Mittelerdes kleinste, aber mutigste Helden."},
+    {title:"Was sind Hobbits?", content:"Ein friedliches Volk, das Gemütlichkeit, Essen und Ordnung über alles schätzt."},
+  
+    {title:"Die Geschichte", content:"Alles begann 1937, als J.R.R. Tolkien die erste Zeile über eine Hobbithöhle schrieb."},
+    {title:"Das Abenteuer", content:"Begleite Bilbo von Beutelsend bis zum Einsamen Berg und zurück."},
+    {title:"Wissen vertiefen", content:"Nutze die verschiedenen Buttons, um Figuren, Orte und die Philosophie zu erkunden."},
+
+    {title:"Hobbit-Natur", content:"Wusstest du, dass Hobbits keine Schuhe tragen? Ihre Füße haben dicke Sohlen und lockiges Haar."},
+    {title:"Die Heimat", content:"Das Auenland ist ein Symbol für Unschuld und den Frieden vor dem Sturm."},
+    {title:"Der Autor", content:"J.R.R. Tolkien schuf eine ganze Welt mit eigenen Sprachen und Mythen."},
+    
+    {title:"Viel Spaß", content:"Genieße deine Reise durch den Hobbit. Mögen deine Füße dich stets nach Hause führen!"}
+  ],
+  wissen: [
+    {title:"Mithril", content:"Ein unbezahlbares Metall, leichter als Federkiel und härter als Drachenschuppen."},
+    {title:"Arkenstein", content:"Das 'Herz des Berges'. Ein Juwel, das das Licht einfängt und vervielfacht."},
+    {title:"Mondrunen", content:"Geheime Schriftzeichen, die Tolkien 1937 erdachte; nur bei Mondlicht sichtbar."},
+    {title:"Stich", content:"Ein elfischer Dolch aus Gondolin, der blau leuchtet, wenn Orks in der Nähe sind."},
+    {title:"Orkrist", content:"Thorins Schwert, auch 'Spalter' genannt."},
+    {title:"Glamdring", content:"Gandalfs Klinge, der 'Feindhammer'."},
+    {title:"5 Heere", content:"Die Schlacht zwischen Menschen, Elben, Zwergen gegen Orks und Warge."},
+    {title:"Khuzdul", content:"Die Geheimsprache der Zwerge."},
+    {title:"Thrors Karte", content:"Zeigt den geheimen Westeingang zum Erebor."},
+    {title:"Schwarzer Pfeil", content:"Bards Waffe, die Smaug endgültig besiegte."},
+    {title:"1937", content:"Das Jahr der Erstveröffentlichung des Hobbits."},
+    {title:"Eichenschild", content:"Thorins Beiname nach der Schlacht von Azanulbizar."},
+    {title:"1/14 Anteil", content:"Bilbos vertragliche Belohnung am Schatz."},
+    {title:"Fassflucht", content:"Die Flucht der Zwerge aus den Hallen der Waldelben."},
+    {title:"Gondolin", content:"Die versunkene Elbenstadt, Ursprung der magischen Schwerter."},
+    {title:"Bilbos Vertrag", content:"Regelt Lohn, Spesen und Bestattungskosten der Reise."},
+    {title:"Rätselspiel", content:"Das Duell zwischen Bilbo und Gollum in der Finsternis."}
+  ],
+  hauptfiguren: [
+    {title:"Bilbo Beutlin", content:"Der Meisterdieb und Ringfinder."},
+    {title:"Gandalf", content:"Der Zauberer und Initiator der Reise."},
+    {title:"Thorin Eichenschild", content:"Der König unter dem Berg."},
+    {title:"Balin", content:"Der weise Berater der Zwerge."},
+    {title:"Dwalin", content:"Ein grimmiger Zwergenkrieger."},
+    {title:"Fili & Kili", content:"Die jungen Neffen Thorins."},
+    {title:"Bard", content:"Retter der Seestadt und Bogenschütze."},
+    {title:"Elrond", content:"Herr von Bruchtal und Runenleser."},
+    {title:"Beorn", content:"Ein Pelzwechsler, der zwischen Mensch und Bär wechselt."},
+    {title:"Bombur", content:"Der schwerste und gemütlichste Zwerg."},
+    {title:"Bofur", content:"Ein stets optimistischer Zwerg."},
+    {title:"Dori", content:"Ein sehr starker Zwerg, der Bilbo oft hilft."},
+    {title:"Gloin", content:"Zwerg mit Stolz, Vater von Gimli."},
+    {title:"Nori", content:"Ein gewitzter Zwerg der Gefährten."},
+    {title:"Ori", content:"Der Schreiber der Gruppe."},
+    {title:"Oin", content:"Zuständig für die Heilung der Gefährten."},
+    {title:"Bifur", content:"Loyaler Zwerg mit Vorliebe für Holzschnitzerei."}
+  ],
+  nebenfiguren: [
+    {title:"Gollum", content:"Kreatur am See, besessen vom 'Schatz'."},
+    {title:"Thranduil", content:"Der stolze Elbenkönig des Nordens."},
+    {title:"Smaug", content:"Verkörperung von Gier und Zerstörung."},
+    {title:"Großer Ork", content:"Tyrann im Nebelgebirge."},
+    {title:"Radagast", content:"Der Braune Zauberer, Freund der Natur."},
+    {title:"Azog", content:"Der bleiche Ork-Erzfeind."},
+    {title:"Bolg", content:"Sohn von Azog, ein brutaler Ork-Krieger."},
+    {title:"Galadriel", content:"Mächtige Elbenherrin des Lichts."},
+    {title:"Saruman", content:"Oberhaupt des Weißen Rates."},
+    {title:"Dain Eisenfuß", content:"Thorins Cousin aus den Eisenbergen."},
+    {title:"Roäc", content:"Der alte Rabe, Bote der Zwerge."},
+    {title:"Bürgermeister", content:"Eigennütziger Anführer der Seestadt."},
+    {title:"Alfrid", content:"Die hinterhältige Rechte Hand des Bürgermeisters."},
+    {title:"Tom, Bert & Bill", content:"Drei Trolle, die zu Stein wurden."},
+    {title:"Gwaihir", content:"Fürst der Adler und Retter."},
+    {title:"Belladonna Tuk", content:"Bilbos mutige Mutter."},
+    {title:"Carc", content:"Berühmter Rabe der alten Tage."}
+  ],
+  orte: [
+    {title:"Beutelsend", content:"Bilbos gemütliche Hobbithöhle."},
+    {title:"Bruchtal", content:"Der letzte Zufluchtsort im Westen."},
+    {title:"Nebelgebirge", content:"Wohnort der Orks und Fundort des Rings."},
+    {title:"Düsterwald", content:"Heimat der Waldelben und Riesenspinnen."},
+    {title:"Erebor", content:"Das alte Königreich der Zwerge."},
+    {title:"Esgaroth", content:"Die Stadt auf dem Langen See."},
+    {title:"Tal", content:"Ruinenstadt am Fuße des Einsamen Berges."},
+    {title:"Dol Guldur", content:"Sitz des Nekromanten im Süden."},
+    {title:"Der Karrock", content:"Massiver Felsen in der Nähe von Beorns Haus."},
+    {title:"Eisenberge", content:"Reich der Zwerge im Osten."},
+    {title:"Langer See", content:"Gewässer zwischen Seestadt und Berg."},
+    {title:"Waldlandreich", content:"Unterirdische Festung von Thranduil."},
+    {title:"Der Bühl", content:"Hügel, auf dem Bilbo lebt."},
+    {title:"Goblin-Stadt", content:"Labyrinthartige Höhlen der Orks."},
+    {title:"Gundabad", content:"Bergfestung der Orks im Norden."},
+    {title:"Waldstrom", content:"Gefährlicher Fluss durch den Düsterwald."},
+    {title:"Die Einsamkeit", content:"Das Land, das Smaug verwüstet hat."}
+  ],
+  kreaturen: [
+    {title:"Warge", content:"Bösartige Wölfe, Reittiere der Orks."},
+    {title:"Riesenspinnen", content:"Netzweber des Düsterwaldes."},
+    {title:"Riesenadler", content:"Boten der Mächte Mittelerdes."},
+    {title:"Orks", content:"Kriegerische Wesen der Dunkelheit."},
+    {title:"Steintrolle", content:"Große Wesen, die bei Sonnenlicht versteinern."},
+    {title:"Hautwechsler", content:"Wesen, die ihre Gestalt wandeln können."},
+    {title:"Drachen", content:"Goldgierige, feuerspeiende Urwesen."},
+    {title:"Waldelben", content:"Scheue, aber wehrhafte Naturvölker."},
+    {title:"Zwerge", content:"Meister der Schmiede- und Bergbaukunst."},
+    {title:"Hobbits", content:"Kleines Volk mit großer Widerstandskraft."},
+    {title:"Drosseln", content:"Alte Vögel, die Nachrichten überbringen."},
+    {title:"Raben", content:"Weise Verbündete des Berges."},
+    {title:"Steinriesen", content:"Giganten der Bergstürme."},
+    {title:"Fledermäuse", content:"Schattenwesen der Orkhorden."},
+    {title:"Grabunholde", content:"Geisterhafte Wächter der Hügelgräber."},
+    {title:"Wargs-Leitwolf", content:"Brutaler Anführer der Wolfsrudel."},
+    {title:"Mondkälber", content:"Seltene Wesen der Sagenwelt."}
+  ],
+  zitate: [
+    {title:"Gandalf", content:"Wahrer Mut bedeutet nicht zu wissen, wann man ein Leben nimmt, sondern wann man eines bewahrt."},
+    {title:"Bilbo", content:"Ich gehe auf ein Abenteuer!"},
+    {title:"Thorin", content:"Wenn mehr von uns Essen und Fröhlichkeit über Gold stellen würden, wäre dies eine glücklichere Welt."},
+    {title:"Gandalf", content:"Die Welt liegt nicht in deinen Büchern. Sie ist da draußen."},
+    {title:"Gollum", content:"Was hat es in seinen Taschen, mein Schatzzzz?"},
+    {title:"Thorin", content:"Ich werde mich nicht mit einem Dieb um mein Erbe streiten."},
+    {title:"Bilbo", content:"Wir Hobbits sind einfache Leute."},
+    {title:"Gandalf", content:"Ein wenig Abenteuer kann keinem schaden."},
+    {title:"Smaug", content:"Ich bin das Feuer, ich bin der Tod!"},
+    {title:"Thorin", content:"Der Schatz gehört mir allein!"},
+    {title:"Gandalf", content:"Du hast dich verändert, Bilbo Beutlin."},
+    {title:"Bilbo", content:"Ich bin ein Dieb, aber ein ehrlicher."},
+    {title:"Thorin", content:"Lebe wohl, guter Dieb."},
+    {title:"Balin", content:"Ich würde ihm überall hin folgen."},
+    {title:"Elrond", content:"Die Runen sprechen von einer geheimen Tür."},
+    {title:"Gandalf", content:"Sucht nach dem Licht im Dunkeln."},
+    {title:"Smaug", content:"Meine Rüstung ist wie zehnfache Schilde!"}
+  ],
+  hobbit_philosophie: [
+    {title:"Erkenntnis von Gut & Böse", content:"Tolkien zeigt, dass das Böse durch Gier entsteht und das Gute durch Mitleid siegt."},
+    {title:"Das Kleine vs. Das Große", content:"Kleine Taten gewöhnlicher Leute halten die Dunkelheit in Schach."},
+    {title:"Die Gefahr der Gier", content:"Die 'Drachenkrankheit' symbolisiert die Vergiftung der Seele durch Besitz."},
+    {title:"Tolkien 1937", content:"Sein Ziel war ein modernes Märchen mit tiefen moralischen Werten."},
+    {title:"Mitleid als Schlüssel", content:"Dass Bilbo Gollum verschont, ist der wichtigste ethische Moment."},
+    {title:"Heimat vs. Abenteuer", content:"Der Konflikt zwischen Sicherheit und der Sehnsucht nach Wachstum."},
+    {title:"Verantwortung", content:"Macht bringt die Pflicht mit sich, für das Gemeinwohl zu handeln."},
+    {title:"Die Natur", content:"Kritik an der Zerstörung der Welt durch Industrialisierung (Smaug)."},
+    {title:"Eukatastrophe", content:"Die Philosophie der unerwarteten Wendung zum Guten."},
+    {title:"Wahre Schätze", content:"Am Ende zählen Freundschaft und Gesang mehr als Gold."},
+    {title:"Mut der Unscheinbaren", content:"Wahrer Mut bedeutet, trotz Angst das Richtige zu tun."},
+    {title:"Sprache & Macht", content:"Worte haben in Mittelerde eine schöpferische und bindende Kraft."},
+    {title:"Opferbereitschaft", content:"Etwas Liebes aufgeben, um das große Ganze zu retten."},
+    {title:"Hoffnung", content:"Selbst in der tiefsten Finsternis existiert ein Weg zum Licht."},
+    {title:"Moralische Reife", content:"Reisen weiten den Geist, aber die Heimat erdet das Herz."},
+    {title:"Gerechtigkeit", content:"Taten wiegen schwerer als rechtmäßige Erbansprüche."},
+    {title:"Tugenden", content:"Tolkien betonte Treue, Demut und Gastfreundschaft als Grundpfeiler."}
+  ]
+};
+
+let currentCategory="home";
+let currentIndex=0;
+
+function speak(text){
+  window.speechSynthesis.cancel();
+  const cleanText = text.replace(/<\/?[^>]+(>|$)/g, "");
+  const msg=new SpeechSynthesisUtterance(cleanText);
+  msg.lang="de-DE";
+  window.speechSynthesis.speak(msg);
+}
+
+function showCard(){
+  const card = cards[currentCategory][currentIndex];
+  let headText = currentCategory.toUpperCase();
+  if(currentCategory === 'home') headText = 'WILLKOMMEN';
+  if(currentCategory === 'hobbit_philosophie') headText = 'PHILOSOPHIE';
+  
+  document.getElementById("card-head").textContent = headText;
+  document.getElementById("element-name").innerHTML = card.title;
+  document.getElementById("meaning").innerHTML = card.content;
+  document.getElementById("card-index").textContent = `${currentIndex+1} / ${cards[currentCategory].length}`;
+  speak(card.title + ". " + card.content);
+}
+
+function goToStart() {
+  currentCategory = "home";
+  currentIndex = 0;
+  showCard();
+}
+
+document.querySelectorAll(".category-btn").forEach(btn=>{
+  btn.onclick=()=>{
+    currentCategory=btn.dataset.category;
+    currentIndex=0;
+    showCard();
+  };
+});
+
+document.getElementById("next-btn").onclick = (e) => {
+  if(e) e.stopPropagation();
+  currentIndex = (currentIndex + 1) % cards[currentCategory].length;
+  showCard();
+};
+
+document.getElementById("prev-btn").onclick = (e) => {
+  if(e) e.stopPropagation();
+  currentIndex = (currentIndex - 1 + cards[currentCategory].length) % cards[currentCategory].length;
+  showCard();
+};
+
+document.getElementById("read-btn").onclick = (e) => {
+  e.stopPropagation();
+  const card = cards[currentCategory][currentIndex];
+  speak(card.title + ". " + card.content);
+};
+
+document.getElementById("card").onclick = () => document.getElementById("next-btn").click();
+
+document.getElementById("explain-btn").onclick = () => {
+  currentCategory = "hobbit_philosophie";
+  currentIndex = 0;
+  showCard();
+};
+
+// Initialer Start mit Home-Kategorie
+showCard();
+</script>
+
+</body>
+</html>
